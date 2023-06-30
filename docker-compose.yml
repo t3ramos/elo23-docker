@@ -1,0 +1,217 @@
+version: "3.7"
+services:
+  server:
+    image: registry.elo.com/eck-services/server:v23-0.3
+    container_name: server
+    ports:
+      - 9090:9090
+    links:
+      - ix-setup:ix-setup
+      - search:search
+      - tr2:tr2
+    environment:
+      IX_URL_BASE: http://${server}:9090/repository/ix
+      IX_URL_PRIVATE: http://${server}:9090/repository/ix
+      ELO_HOST: http://${server}:9090
+      IX_APP_PATH: repository
+      DATABASE_PASSWORD: CKZbP0SVMAPu
+      KEYSTORE_PASSWORD: NLcad64E3F7xL2dC
+      AUTH_TOMCAT_USERNAME: admin
+      AUTH_TOMCAT_PASSWORD: HpHZ6Orc5RWO
+      AUTH_SERVICE_PASSWORD: moxIZAaDQGjw
+    volumes:
+      - ${data_ix}:/opt/elo/data/ix
+      - ${data_eloam}:/opt/elo/data/eloam
+      - ${repository_system}:/opt/elo/archive/elosys
+      - ${repository_basis}:/opt/elo/archive/basis
+      - ${certificates_ix}:/opt/elo/config/certificates/ix/:ro
+      - ${plugins}:/opt/elo/prog/webapps/ix-plugins/public
+      - ${logs}:/opt/elo/logs
+  ix-setup:
+    image: registry.elo.com/eck-services/ix-setup:v23-0.3
+    container_name: ix-initialize
+    environment:
+      ELO_TEXTREADER_URL: http://tr2:8100
+      IX_URL_BASE: http://${server}:9090/repository/ix
+      IX_URL_PRIVATE: http://${server}:9090/repository/ix
+      ELO_HOST: http://${server}:9090
+      AUTH_SERVICE_PASSWORD: moxIZAaDQGjw
+      AUTH_ADMIN_PASSWORD: QRLTS38FjesG
+      DATABASE_PASSWORD: CKZbP0SVMAPu
+      DATABASE_USERNAME: elodb
+      KEYSTORE_PASSWORD: NLcad64E3F7xL2dC
+      ELO_LIC: |-
+        createdate=2023-03-22
+        customer1=presentation license EU (838) - ELO Digital Office GmbH
+        customer2=Not for resale
+        usercount1=20
+        usercount2=20
+        usercount3=20
+        usercount4=20
+        usercount5=20
+        usercount6=20
+        usercount7=20
+        usercount8=20
+        usercount9=20
+        usercount10=20
+        usercount11=100
+        usercount12=20
+        usercount13=0
+        langcount=3
+        validThru=2024-03-31
+        resetxc=
+        product=23p
+        feature.REPLICATION=true
+        feature.BACKUP=true
+        feature.BARCODE=true
+        feature.CMIS=true
+        feature.XMLIMPORT=true
+        feature.COLD=true
+        feature.SAPALINK=true
+        feature.WEBCLIENT=true
+        feature.SIGNATURE=true
+        feature.STACKSIGN=true
+        feature.ADDRESS=true
+        feature.VISITOR=true
+        feature.KNOWLEDGE=true
+        feature.INVOICE=true
+        feature.HRLEAVE=true
+        feature.ZUGFERD=true
+        feature.RECRUITING=true
+        feature.EAKTE=true
+        feature.HRPERSONAL=true
+        feature.HREXPENSES=true
+        feature.CONTRACT=true
+        feature.SAPCP=true
+        feature.SAPTOOLBOX=true
+        feature.SAPILM=true
+        feature.SHAREPOINT=true
+        feature.SMARTINPUT=true
+        feature.FIXTURES=true
+        feature.LEARNING=true
+        feature.EICBUSINESSONE=true
+        feature.EDTBUSINESSONE=true
+        feature.EOLNAVISION=true
+        feature.EICSALESFORCE=true
+        feature.EICSHAREPOINT=true
+        feature.E4DATEV=true
+        feature.EDTNAVISION=true
+        feature.EICNAVISION=true
+        feature.EOLBUSINESSONE=true
+        feature.SKILL=true
+        feature.DOCUSIGN=true
+        feature.SAPCMIS=true
+        feature.EOLABASERP=true
+        feature.EICABASERP=true
+        feature.MEETING=true
+        feature.EICSMARTWE=true
+        feature.EICC4C=true
+        feature.EICSBYD=true
+        feature.MEETINGPREMIUM=true
+        guid=P(12926698-0E93-3134-7B48-337CA67E9120)
+        sordguid=(12926698-0E93-3134-7B48-337CA67E9124)
+
+        email=
+
+        groupid=
+
+        token=
+        hash1=b42d20e28f6c6d765e8e6d1fa35d68fef6b8952b885d3fbfdfc4464acace9251
+
+        ---
+        jihmhambjppknahlnejkkaigodjimmddlcnpadeejieokgpkdenjojacakoipfhehaknjeojnkfmliinadgnjfbcdfnheopbdkklaiabcmpofhcghmmdghcoecnijcbllipaondgemipjiiaoeoldcholhigflldglngkajoehfnnohoafcebiphnpddffbiohdlhcfdichphpglbmhlefjbleknkgjeignaecfangilopagmdideaidhnkgajhinacocifbmeecdninifbgjcdaggbmjonljofjnajjmhhaajbahgmmkhioonkadknhledmhjhlgliimdnbffccpaaagolonaeeoaekonlcipbmgiefaphcbeaobegodmamfbpflkbabcjffnacclpcambemgencdcenogobejblihkphikjpleiomcnjoplaoacbnlbejophodnljfnlicjjgecknfjhafelfbfamlakglffhopphoonalpipoelmg
+              
+    volumes:
+      - ${data_eloam}:/opt/elo/data/eloam
+      - ${data_ix}:/opt/elo/data/ix
+      - ${repository_system}:/opt/elo/archive/elosys
+      - ${repository_basis}:/opt/elo/archive/basis
+      - ${certificates_ix}:/opt/elo/config/certificates/ix
+      - ${certificates_search}:/opt/elo/config/certificates/search
+      - ${certificates_analytics}:/opt/elo/config/certificates/analytics
+      - ${logs}:/opt/elo/logs
+  ix-import:
+    image: registry.elo.com/eck-services/ix-import:v23-0.3
+    container_name: ix-import
+    links:
+      - server:ix
+    environment:
+      AUTH_SERVICE_PASSWORD: moxIZAaDQGjw
+      AUTH_ADMIN_PASSWORD: QRLTS38FjesG
+  as:
+    image: registry.elo.com/eck-services/as:v23-0.1
+    container_name: as
+    environment:
+      AUTH_SERVICE_PASSWORD: moxIZAaDQGjw
+    ports:
+      - 9060:9090
+      - 8778:8778
+      - 9779:9779
+    links:
+      - server:ix
+  search:
+    image: registry.elo.com/eck-services/search:v23-0.1
+    container_name: search
+    ports:
+      - 9204:9204
+      - 9200:9200
+    environment:
+      bootstrap.memory_lock: "true" 
+      AUTH_SERVICE_USERNAME: ELO Service
+      AUTH_SERVICE_PASSWORD: moxIZAaDQGjw
+      AUTH_SERVICE_PASSWORD_BCRYPT: $$2a$$04$$Dj/qj0ceUNr8pAEj92SBoO9iA5qmJStYFlaPCnwv8/MsqtlLqXrIq
+      KEYSTORE_PASSWORD: NLcad64E3F7xL2dC
+    volumes:
+      - ${data_search}:/opt/elo/data/index
+      - ${certificates_search}:/opt/elo/config/certificates/search
+      - ${logs}:/opt/elo/logs
+  flows:
+    image: registry.elo.com/eck-services/flows:v23-0.1
+    container_name: flows
+    environment:
+      AUTH_SERVICE_PASSWORD: moxIZAaDQGjw
+      AUTH_ADMIN_PASSWORD: QRLTS38FjesG
+    ports:
+      - 9010:9090
+    links:
+      - server:ix
+      - flows-worker:flows-worker
+    volumes:
+      - ${data_flows}:/opt/elo/data/flows/
+      - ${logs}:/opt/elo/logs
+  flows-worker:
+    image: registry.elo.com/eck-services/flows-worker:v23-0.1
+    container_name: flows-worker
+    environment:
+      AUTH_SERVICE_PASSWORD: moxIZAaDQGjw
+      AUTH_KARAF_PASSWORD: karaf
+      FLOWS_WORKER_HOST: flows-worker
+    ports:
+      - 8101:8101
+      - 1099:1099
+      - 44444:44444
+      - 8181:8181
+      - 9999:9999
+      - 9000:9000
+    links:
+      - server:ix
+    volumes:
+      - ${logs}:/opt/elo/logs
+  tr2:
+    image: registry.elo.com/eck-services/tr2:v23-0.1
+    container_name: tr2
+    environment:
+      AUTH_TOMCAT_USERNAME: admin
+      AUTH_TOMCAT_PASSWORD: HpHZ6Orc5RWO
+    ports:
+      - 8100:8100
+  postgres:
+    image: registry.elo.com/eck-services/postgresql:12.5.0
+    container_name: postgres
+    environment:
+      POSTGRES_USERNAME: elodb
+      POSTGRES_PASSWORD: CKZbP0SVMAPu
+    volumes:
+       - ${data_db}:/bitnami/postgresql
+    stdin_open: true
+    tty: true
