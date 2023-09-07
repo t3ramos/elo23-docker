@@ -120,7 +120,6 @@ services:
 
         ---
         jihmhambjppknahlnejkkaigodjimmddlcnpadeejieokgpkdenjojacakoipfhehaknjeojnkfmliinadgnjfbcdfnheopbdkklaiabcmpofhcghmmdghcoecnijcbllipaondgemipjiiaoeoldcholhigflldglngkajoehfnnohoafcebiphnpddffbiohdlhcfdichphpglbmhlefjbleknkgjeignaecfangilopagmdideaidhnkgajhinacocifbmeecdninifbgjcdaggbmjonljofjnajjmhhaajbahgmmkhioonkadknhledmhjhlgliimdnbffccpaaagolonaeeoaekonlcipbmgiefaphcbeaobegodmamfbpflkbabcjffnacclpcambemgencdcenogobejblihkphikjpleiomcnjoplaoacbnlbejophodnljfnlicjjgecknfjhafelfbfamlakglffhopphoonalpipoelmg
-              
     volumes:
       - ${data_eloam}:/opt/elo/data/eloam
       - ${data_ix}:/opt/elo/data/ix
